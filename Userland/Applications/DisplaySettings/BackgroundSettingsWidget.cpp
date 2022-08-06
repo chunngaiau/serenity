@@ -37,6 +37,7 @@ BackgroundSettingsWidget::BackgroundSettingsWidget(bool& background_settings_cha
     m_modes.append("tile");
     m_modes.append("center");
     m_modes.append("stretch");
+    m_modes.append("fill");
 
     create_frame();
     load_current_settings();

@@ -39,6 +39,8 @@ static WallpaperMode mode_to_enum(String const& name)
         return WallpaperMode::Stretch;
     if (name == "center")
         return WallpaperMode::Center;
+    if (name == "fill")
+        return WallpaperMode::Fill;
     return WallpaperMode::Center;
 }
 
@@ -312,7 +314,7 @@ void Compositor::compose()
                 painter.blit_offset(rect.location(), *m_wallpaper, rect.translated(-screen_rect.location()), offset);
             } else if (m_wallpaper_mode == WallpaperMode::Tile) {
                 painter.draw_tiled_bitmap(rect, *m_wallpaper);
-            } else if (m_wallpaper_mode == WallpaperMode::Stretch) {
+            } else if (m_wallpaper_mode == WallpaperMode::Stretch || m_wallpaper_mode == WallpaperMode::Fill) {
                 VERIFY(screen.compositor_screen_data().m_wallpaper_bitmap);
                 painter.blit(rect.location(), *screen.compositor_screen_data().m_wallpaper_bitmap, rect);
             } else {
@@ -825,7 +827,7 @@ void Compositor::update_wallpaper_bitmap()
 {
     Screen::for_each([&](Screen& screen) {
         auto& screen_data = screen.compositor_screen_data();
-        if (m_wallpaper_mode != WallpaperMode::Stretch || !m_wallpaper) {
+        if (m_wallpaper_mode == WallpaperMode::Center || m_wallpaper_mode == WallpaperMode::Tile || !m_wallpaper) {
             screen_data.clear_wallpaper_bitmap();
             return IterationDecision::Continue;
         }
@@ -835,7 +837,17 @@ void Compositor::update_wallpaper_bitmap()
         auto rect = screen_data.m_wallpaper_bitmap->rect();
         auto& painter = *screen_data.m_wallpaper_painter;
 
-        painter.draw_scaled_bitmap(rect, *m_wallpaper, m_wallpaper->rect());
+        if (m_wallpaper_mode == WallpaperMode::Stretch) {
+            painter.draw_scaled_bitmap(rect, *m_wallpaper, m_wallpaper->rect());
+        } else if (m_wallpaper_mode == WallpaperMode::Fill) {
+            float h_scale = static_cast<float>(m_wallpaper->width()) / static_cast<float>(screen.width());
+            float v_scale = static_cast<float>(m_wallpaper->height()) / static_cast<float>(screen.height());
+            float scale = min(h_scale, v_scale);
+            auto src_rect = rect.to_type<float>().scaled(scale, scale).centered_within(m_wallpaper->rect().to_type<float>());
+            painter.draw_scaled_bitmap(rect, *m_wallpaper, src_rect);
+        } else {
+            VERIFY_NOT_REACHED();
+        }
 
         return IterationDecision::Continue;
     });
