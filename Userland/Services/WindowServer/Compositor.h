@@ -36,9 +36,11 @@ struct CompositorScreenData {
     RefPtr<Gfx::Bitmap> m_front_bitmap;
     RefPtr<Gfx::Bitmap> m_back_bitmap;
     RefPtr<Gfx::Bitmap> m_temp_bitmap;
+    RefPtr<Gfx::Bitmap> m_wallpaper_bitmap;
     OwnPtr<Gfx::Painter> m_back_painter;
     OwnPtr<Gfx::Painter> m_front_painter;
     OwnPtr<Gfx::Painter> m_temp_painter;
+    OwnPtr<Gfx::Painter> m_wallpaper_painter;
     RefPtr<Gfx::Bitmap> m_cursor_back_bitmap;
     OwnPtr<Gfx::Painter> m_cursor_back_painter;
     Gfx::IntRect m_last_cursor_rect;
@@ -211,6 +213,7 @@ private:
     void stop_window_stack_switch_overlay_timer();
     void start_window_stack_switch_overlay_timer();
     void finish_window_stack_switch();
+    void redraw_wallpaper();
 
     RefPtr<Core::Timer> m_compose_timer;
     RefPtr<Core::Timer> m_immediate_compose_timer;
