@@ -833,13 +833,9 @@ void Compositor::update_wallpaper_bitmap()
             screen_data.init_wallpaper_bitmap(screen);
 
         auto rect = screen_data.m_wallpaper_bitmap->rect();
-        auto screen_rect = screen.rect();
         auto& painter = *screen_data.m_wallpaper_painter;
 
-        float h_scale = static_cast<float>(m_wallpaper->width()) / static_cast<float>(screen.width());
-        float v_scale = static_cast<float>(m_wallpaper->height()) / static_cast<float>(screen.height());
-        auto src_rect = rect.translated(-screen_rect.location()).to_type<float>().scaled(h_scale, v_scale);
-        painter.draw_scaled_bitmap(rect, *m_wallpaper, src_rect);
+        painter.draw_scaled_bitmap(rect, *m_wallpaper, m_wallpaper->rect());
 
         return IterationDecision::Continue;
     });
