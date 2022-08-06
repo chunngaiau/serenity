@@ -62,6 +62,8 @@ struct CompositorScreenData {
     void flip_buffers(Screen&);
     void draw_cursor(Screen&, Gfx::IntRect const&);
     bool restore_cursor_back(Screen&, Gfx::IntRect&);
+    void init_wallpaper_bitmap(Screen&);
+    void clear_wallpaper_bitmap();
 
     template<typename F>
     IterationDecision for_each_intersected_flushing_rect(Gfx::IntRect const& intersecting_rect, F f)
@@ -213,7 +215,7 @@ private:
     void stop_window_stack_switch_overlay_timer();
     void start_window_stack_switch_overlay_timer();
     void finish_window_stack_switch();
-    void redraw_wallpaper();
+    void update_wallpaper_bitmap();
 
     RefPtr<Core::Timer> m_compose_timer;
     RefPtr<Core::Timer> m_immediate_compose_timer;
